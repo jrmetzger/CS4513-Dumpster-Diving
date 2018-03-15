@@ -1,4 +1,6 @@
-#README
+# Dumpster Diving
+author: Jonathan Metzger
+date: 3/15/18
 
 ## RUN
 
