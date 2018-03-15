@@ -46,4 +46,4 @@ $ ./rm [ -f -h -r -d] file(s)
 - [ ] dump : removes all files in "dumpster"
 
 - [ ] log all information into log.txt (Errors, messages, etc.)
-- [ ] if "dumpster" directory has not been created, error and exit.
+ [ ] if "dumpster" directory has not been created, error and exit.
