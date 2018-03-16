@@ -1,11 +1,16 @@
-all: rm
+all: rm dump dive
 
-rm.o: rm.c
-	gcc -g3 -c rm.c -o rm.o
 
-rm: rm.o
-	gcc -g3 rm.o -o rm
+dump: dump.c
+	gcc -g3 -o dump dump.c common.c
+
+rm: rm.c
+	gcc -g3 -o rm rm.c common.c
+
+
+dive: dive.c
+	gcc -g3 -o dive dive.c common.c
 
 clean:
-	-rm -f rm.o
-	-rm -f rm
+	-rm -f *.o
+	-rm -f rm dump dive

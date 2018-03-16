@@ -7,9 +7,9 @@
  *
  * Project for CS4513 Distributed Computing Systems
  *
- * source: http://stackoverflow.com/questions/8465006/how-to-concatenate-2-strings-in-c
  */
 
+#include "common.h"
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -23,42 +23,50 @@
 #include <string.h>
 #include <errno.h>
 
+/* ERROR call */
+void ERROR_call();
+/* checks if no file is present */
+void ERROR_no_file(int argc);
+/* ERROR call for rename() */
+void ERROR_rename_call();
+/* ERROR call for remove() */
+void ERROR_remove_call();
+/* ERROR call for open() */
+void ERROR_open_call();
+/* ERROR call for opendir() */
+void ERROR_opendir_call();
+/* ERROR call for mkdir() */
+void ERROR_mkdir_call();
+/* sets directory to extension */
+void ERROR_duplicate_dir();
+/* ERROR call for rmdir() */
+void ERROR_rmdir_call();
+/* ERROR when dumpster limit reached */
+void ERROR_limit_dumpster(int number);
+/* ERROR call for stat() */
+void ERROR_stat_call();
+/* ERROR call for open() */
+void ERROR_chmod_call();
+/* ERROR call for utime() */
+void ERROR_utime_call();
+/* ERROR call for unlink() */
+void ERROR_unlink_call();
+
+/* remove perminently. used with -f flag */
+void remove_force(char* directory);
 /* checks if -f flag is present */
 void check_f_flag(char* file);
 /* checks if -r flag is present */
 void check_r_flag();
 /* check to see if dumpster same directory */
 void check_dumpster();
-/* ERROR call for mkdir() */
-void ERROR_mkdir_call();
-/* ERROR call for rmdir() */
-void ERROR_rmdir_call();
-/* ERROR call for unlink() */
-void ERROR_unlink_call();
-/* ERROR call for open() */
-void ERROR_open_call();
-/* ERROR call for open() */
-void ERROR_chmod_call();
-/* ERROR call for utime() */
-void ERROR_utime_call();
-/* ERROR call for stat() */
-void ERROR_stat_call();
-/* ERROR call for remove() */
-void ERROR_remove_call();
-/* ERROR when dumpster limit reached */
-void ERROR_limit_dumpster(int number);
-/* ERROR call */
-void ERROR_call();
-/* seperator line */
-void end_line();
+
 /* title of the program */
 void program_title();
 /* prints help message and quit */
 void usage();
 /* takes flags from input */
 void flag_check(int argc, char **argv);
-/* checks if no file is present */
-void nofile_check(int argc);
 /* set dumpster */
 void set_dumpster();
 /* set file */
@@ -67,12 +75,10 @@ void set_file(char* file);
 char* get_extension(char* path);
 // Get the file path in dumpster for a given file.
 void get_dumpsterPath(char* file, char* dumpster_path, char** new_path);
-// Concatinate two strings.
-char* concat(char* c1, char* c2);
 // Copy a file to dumpster across partition.
 void copyto_dump(char* file, char* dumpster_path, struct stat file_stat);
 // Remove a directory recursivly.
-void remove_directory(char* currPath, char* currdumpster_path, int isSamePtn);
+void remove_directory(char* current_path, char* currdumpster_path, int isSamePtn);
 // Remove a directory perminently. This is used when -f is specified.
 void remove_force(char* directory);
 
@@ -87,6 +93,7 @@ DIR* dir;
 struct stat dumpster_stat;
 struct stat file_stat;
 struct stat source_dir;
+struct dirent* d;
 
 /* initialize integers */
 int number = 0;
@@ -102,23 +109,31 @@ int remove_call = 0;
 int i = 0;
 int f_flag = 0;
 int r_flag = 0;
-int tot_flag = 0;    
+int tot_flag = 0; 
+int duplicate = 0; 
 
 /* initialize characters */
-char* dumpster_name = "dumpster"; /* must match directory in current location */
+char* dumpster_name = DUMPSTER;
+char* ext = EXTENSION; /* extension char */ 
 char* dumpster_path = NULL;
 char* new_path = NULL;
+char* newdumpster_path = NULL;
+char* file = NULL;
+char* temp_path  = NULL;
 
 /* main */
 int main(int argc, char** argv)
 {   
+
+    printf("\n");
+
     end_line();
 
     program_title();
 
     flag_check(argc, argv);
 
-    nofile_check(argc);
+    ERROR_no_file(argc);
 
     set_dumpster();
 
@@ -135,7 +150,7 @@ int main(int argc, char** argv)
     /* move file(s) */
     for(i = 0; i < count_file; i ++)
     {
-        char* file = files[i];
+        file = files[i];
         /* get file */
         set_file(file);
         if(f_flag)
@@ -156,14 +171,8 @@ int main(int argc, char** argv)
 /* force remove file */
 void remove_force(char* directory)
 {
-    struct dirent* d;
     dir = opendir(directory);
-
-    if(dir == NULL)
-    {
-        fprintf(stderr, "** ERROR: open() call failed. ** \n");
-        ERROR_call();
-    }
+    ERROR_opendir_call();
     
     d = readdir(dir);
 
@@ -175,9 +184,9 @@ void remove_force(char* directory)
             continue;
         }
 
-        struct stat file_stat;
-        char* file = concat(directory, "/");
+        file = concat(directory, "/");
         file = concat(file, d->d_name);
+
         stat_call = stat(file, &file_stat);
         ERROR_stat_call();
         
@@ -199,24 +208,21 @@ void remove_force(char* directory)
 }
 
 /* remove directory */
-void remove_directory(char* currPath, char* currdumpster_path, int isSamePtn)
+void remove_directory(char* current_path, char* currdumpster_path, int isSamePtn)
 {
-    struct dirent* d;
-    char* newdumpster_path;
-    get_dumpsterPath(currPath, currdumpster_path, &newdumpster_path);
 
-    stat_call = stat(currPath, &source_dir);
+    get_dumpsterPath(current_path, currdumpster_path, &newdumpster_path);
+
+    stat_call = stat(current_path, &source_dir);
     ERROR_stat_call();
 
-    // Create a new directory in dumpster and update currdumpster_path.
     mkdir_call = mkdir(newdumpster_path, source_dir.st_mode);
+    ERROR_duplicate_dir();
+    ERROR_mkdir_call();
 
-    dir = opendir(currPath);
-    if(dir == NULL)
-    {
-        perror("open() call failed");
-        exit(-1);
-    }
+    dir = opendir(current_path);
+    ERROR_opendir_call();
+
     d = readdir(dir);
     while(d)
     {
@@ -226,74 +232,54 @@ void remove_directory(char* currPath, char* currdumpster_path, int isSamePtn)
             continue;
         }
         struct stat currStat;
-        char* file = concat(currPath, "/");
+        char* file = concat(current_path, "/");
         file = concat(file, d->d_name);
-        int stat_call = stat(file, &currStat);
-        if(stat_call)
-        {
-            fprintf(stderr, "** ERROR: stat() call failed ... **\n");
-            exit(-1);
-        }
+
+        stat_call = stat(file, &currStat);
+        ERROR_stat_call();
+
         if(S_ISREG(currStat.st_mode))
         {
             if(isSamePtn)
             {
                 
                 get_dumpsterPath(file, newdumpster_path, &new_path);
-                int rename_call = rename(file, new_path);
-                if(rename_call)
-                {
-                    fprintf(stderr, "** ERROR: rename() call failed ... **\n");
-                    ERROR_call();
-                }
-                int chmod_call = chmod(new_path, currStat.st_mode);
-                if(chmod_call)
-                {
-                    perror("chmod() call failed");
-                    exit(chmod_call);
-                }
+
+                rename_call = rename(file, new_path);
+                ERROR_rename_call();
+
+                chmod_call = chmod(new_path, currStat.st_mode);
+                ERROR_chmod_call();
             }
             else
             {
                 copyto_dump(file, newdumpster_path, currStat);
-                int unlink_call = unlink(file);
-                if(unlink_call)
-                {
-                    perror("unlink() call failed");
-                    exit(-1);
-                }
+
+                unlink_call = unlink(file);
+                ERROR_unlink_call();
             }
         } 
         else if(S_ISDIR(currStat.st_mode))
         {
             remove_directory(file, newdumpster_path, isSamePtn);
-            int rmdir_call = rmdir(file);
-            if(rmdir_call)
-            {
-                perror("rmdir() call failed");
-                exit(-1);
-            }
+
+            rmdir_call = rmdir(file);
+            ERROR_rmdir_call();
         }
         free(file);
         d = readdir(dir); 
     }
     closedir(dir);
+
     chmod_call = chmod(newdumpster_path, source_dir.st_mode);
     ERROR_chmod_call();
 
-    const struct utimbuf srcTim = {source_dir.st_atime, source_dir.st_mtime};
-    utime_call = utime(newdumpster_path, &srcTim);
+    const struct utimbuf source_time = {source_dir.st_atime, source_dir.st_mtime};
+    
+    utime_call = utime(newdumpster_path, &source_time);
     ERROR_utime_call();
+    
     free(newdumpster_path);
-}
-
-/* concate two strings */
-char* concat(char* s1, char* s2)
-{
-    char* result = malloc(strlen(s1) + strlen(s2) + 1);
-    strcpy(result, s1);
-    strcat(result, s2);
-    return result;
 }
 
 /* copy to dumpster */
@@ -318,8 +304,8 @@ void copyto_dump(char* file, char* dumpster_path, struct stat file_stat)
     chmod_call = chmod(new_path, file_stat.st_mode);
     ERROR_chmod_call();
 
-    const struct utimbuf srcTim = {file_stat.st_atime, file_stat.st_mtime};
-    int utime_call = utime(new_path, &srcTim);
+    const struct utimbuf source_time = {file_stat.st_atime, file_stat.st_mtime};
+    int utime_call = utime(new_path, &source_time);
     ERROR_utime_call();
 
     free(new_path);
@@ -340,8 +326,8 @@ void get_dumpsterPath(char* file, char* dumpster_path, char** new_path)
 /* get extension */
 char* get_extension(char* path)
 {
-    char* temp_path = path;
-    int duplicate = 0;
+    temp_path = path;
+    duplicate = 0;
     number = 1;
     char array[2];
     array[1] = '\0';
@@ -364,16 +350,12 @@ char* get_extension(char* path)
     return concat(".", array);
 }
 
-/* end line */
-void end_line(){ printf("\n###########################################\n\n"); }
-
 /* Title of the Program */
 void program_title()
 {
-    end_line();
     printf("\tWelcome to Dumpster Diving\n");
     printf("\tCreated by Jonathan Metzger\n");
-    printf("\t{ rm } tool Utility\n");
+    printf("\t{ rm } tool Utility\n\n");
     end_line();
 }
 
@@ -384,7 +366,7 @@ void usage()
     printf("usage: ./rm -f -h -r < file(s) ... > \n");
     printf("  -f:\tforce a complete remove\n");
     printf("  -h:\tusage message\n");
-    printf("  -r:\tremove any subdirectories\n");
+    printf("  -r:\tremove any subdirectories\n\n\n");
     end_line();
     exit(1);
 }
@@ -425,14 +407,12 @@ void flag_check(int argc, char **argv)
 }
 
 /* no file present */
-void nofile_check(int argc)
+void ERROR_no_file(int argc)
 {
     if (optind == argc)
     {
-        fprintf(stderr, "** ERROR: no file present ... **\n");
-        end_line();
-        usage();
-        exit(-1);
+        fprintf(stderr, "** ERROR: no file present ... **\n\n");
+        ERROR_call();
     }
 }
 
@@ -466,19 +446,16 @@ void set_file(char* file)
 {
     if(access(file, F_OK) == -1)
     {
-        fprintf(stderr, "** ERROR: file(s) do not exist ... **\n");
+        fprintf(stderr, "** ERROR: file(s) do not exist ... **\n\n");
         end_line();
         usage();
-        exit(-1);
     }
 
     stat_call = stat(file, &file_stat);
     if(stat_call)
     {
         fprintf(stderr, "** ERROR: stat() call failed. ** \n");
-        end_line();
-        usage();
-        exit(-1);
+        ERROR_call();
     }
 }
 
@@ -487,7 +464,7 @@ void check_r_flag()
 {
     if(!r_flag)
     {
-        printf("** ERROR: -r option missing for directory. **\n");
+        printf("** ERROR: -r option missing for directory. **\n\n");
         ERROR_call();
     }
 }
@@ -561,6 +538,8 @@ void check_dumpster(char* file)
     }
 }
 
+/* ##### ERROR CALLS ##### */
+
 /* ERROR call */
 void ERROR_call()
 {    
@@ -575,6 +554,16 @@ void ERROR_remove_call()
     if(rmdir_call)
     {
         fprintf(stderr, "** ERROR: remove() call failed. ** \n");
+        ERROR_call();
+    }
+}
+
+/* ERROR call for rename() */
+void ERROR_rename_call()
+{
+    if(rename_call)
+    {
+        fprintf(stderr, "** ERROR: rename() call failed ... **\n");
         ERROR_call();
     }
 }
@@ -649,12 +638,21 @@ void ERROR_chmod_call()
     }
 }
 
+void ERROR_opendir_call()
+{
+    if(dir == NULL)
+    {
+        fprintf(stderr, "** ERROR: opendir() call failed. ** \n\n");
+        ERROR_call();
+    }
+}
+
 /* ERROR call for mkdir() */
 void ERROR_mkdir_call()
 {
     if(mkdir_call)
-    {
-        fprintf(stderr, "** ERROR: mkdir() call failed. ** \n");
+    {   
+        fprintf(stderr, "** ERROR: mkdir() call failed. ** \n\n");
         ERROR_call();
     }
 }
@@ -664,11 +662,22 @@ void ERROR_limit_dumpster(int number)
 {
 	if(number == 10)
     {
-        printf("Dumpster is full!");
-        exit(-1);
+        fprintf(stderr, "** ERROR: dumpster is full. ** \n\n");
+        ERROR_call();
     }
     number ++;
 }
+
+/* sets directory to extension */
+void ERROR_duplicate_dir()
+{
+    if(mkdir_call)
+    {
+        newdumpster_path = strcat(newdumpster_path, ext);
+        mkdir_call = mkdir(newdumpster_path, source_dir.st_mode);
+    }
+}
+
 
 
 

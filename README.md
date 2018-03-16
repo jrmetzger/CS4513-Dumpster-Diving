@@ -4,16 +4,13 @@
 
 ## RUN
 
-The application will remove the file
- -f premanently
+This application will move files into the dumpster
+ -f premanently (not moved to dumpster)
  -h help message
- -r directories
- -d specific dumpster
+ -r include directories and anything inside
 
 ```
-
 $ ./rm [ -f -h -r -d] file(s)
-
 ```
 
 ## TASKS
@@ -44,8 +41,7 @@ $ ./rm [ -f -h -r -d] file(s)
 
 - [ ] dv : dive into "dumpster" to recover 
 
-
 - [ ] dump : removes all files in "dumpster"
 
 - [ ] log all information into log.txt (Errors, messages, etc.)
-- [ ] if "dumpster" directory has not been created, error and exit.
+- [x] if "dumpster" directory has not been created, error and exit.
