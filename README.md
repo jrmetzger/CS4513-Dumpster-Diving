@@ -13,6 +13,11 @@ This application will move files into the dumpster
 $ ./rm [ -f -h -r -d] file(s)
 ```
 
+
+```
+$ ./dump [ -h ]
+```
+
 ## TASKS
 
 - [x] rm : puts deleted files into seperate "dumpster" (hidden directory)
