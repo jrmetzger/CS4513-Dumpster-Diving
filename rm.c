@@ -289,7 +289,7 @@ void remove_directory(char* current_path, char* currdumpster_path, int isSamePtn
 void copyto_dump(char* file, char* dumpster_path, struct stat file_stat)
 {
     get_dumpsterPath(file, dumpster_path, &new_path);
-
+    ERROR_duplicate_dir();
     size_t bytes;
     char buf[1024];
     ERROR_open_call(file, &new_path);
@@ -322,7 +322,7 @@ void get_dumpsterPath(char* file, char* dumpster_path, char** new_path)
     char* bname = basename(basec);
     *new_path = concat(dumpster_path, "/");
     *new_path = concat(*new_path, bname);
-    char* ext = get_extension(*new_path);
+    ext = get_extension(*new_path);
     if(strcmp(ext, ".0")) { *new_path = concat(*new_path, ext); }
 }
 

@@ -28,7 +28,7 @@ void usage(void);
 // Remove a folder.
 void remove_directory(char* currPath, char* file, int isSamePtn);
 /* copy to targetget */
-void copyto_target(char* source_path, char* curr_target_path, struct stat fileStat);
+void copyto_target(char* source_path, char* curr_target_path, struct stat file_stat);
 
 /* ERROR call */
 void ERROR_call();
@@ -50,6 +50,10 @@ void ERROR_rename_call();
 void ERROR_unlink_call();
 /* ERROR call for utime() */
 void ERROR_utime_call();
+/* ERROR call for fopen() */
+void ERROR_fopen_call();
+/* ERROR call for reading and writing files */
+void ERROR_rw_file();
 /* ERROR call for fileNotFound() */
 void ERROR_fileNotFound(char* source_path);
 /* Title of the Program */
@@ -59,7 +63,7 @@ void set_dumpster();
 /* checks flag of input */
 void flag_check(int argc, char **argv);
 
-/* initialize DIR and FILE*/
+/* initialize DIR and FILE */
 DIR* dir;
 FILE* source;
 FILE* target;
@@ -68,7 +72,6 @@ size_t bytes;
 
 
 /* Integers */
-
 int tot_flag = 0;
 int i = 0;
 int stat_call = 0;
@@ -80,7 +83,6 @@ int rename_call = 0;
 int utime_call = 0;
 int count_file = 0;
 int access_call = 0;
-
 
 /* initialize structs */
 struct stat dumpster_stat;
@@ -99,9 +101,7 @@ char* source_path = NULL;
 char* buf[1024];
 char* base = NULL;
 
-
-
-
+/* main */
 int main(int argc, char** argv)
 {
 	printf("\n");
@@ -126,60 +126,33 @@ int main(int argc, char** argv)
         files[i] = argv[i + optind];
     }
 
-
-	// Get stat for dumpster.
+	/* dumpster stats */
 	struct stat dumpster_stat;
 	stat_call = stat(dumpster_path, &dumpster_stat);
 	ERROR_stat_call();
-	// Get information for current directory.
 	char current_dir[1024];
 	getcwd_call = getcwd(current_dir, 1024);
-	if(!getcwd_call)
-	{
-		perror("getcwd() call failed");
-		exit(-1);
-	}
-	// printf("Current working directory is %s\n", current_dir);
-	// Get stat for current working directory.
+	ERROR_getcwd_call();
 	stat_call = stat(current_dir, &current_dir_stat);
 	ERROR_stat_call();
-	// Move file from dumpster to current directory.
-	// Check for partition.
-	// printf("On same partition\n");
 	for(i = 0; i < count_file; i++)
 	{
 		char* file = files[i];
-		// Check for file existance.
 		int access_call = access(file, F_OK);
-		// Free this!
-		// Get the file in dumpster.
-		
 		source_path = concat(dumpster_path, "/");
 		source_path = concat(source_path, file);
-		// TODO: May have to report error when input is "/..."
-		// Get the file name of the actual file.
 		char* dupFile = strdup(file);
 		char* target_file;
 		char* token;
 		while((token = strsep(&dupFile, "/"))){
-			// printf("%s\n", token);
 			target_file = strdup(token);
 		}
-		// printf("Final token is %s\n", target_file);
-		// int k = 0;
-		// for(k = 0; k < j; k ++){
-		// 	printf("%s\n", tokens[j]);
-		// }
-		// Use access to check whether fiel exists.
 		ERROR_fileNotFound(source_path);
-		
 		int stat_call = stat(source_path, &source_file_stat);
 		ERROR_stat_call();
-
 		if(dumpster_stat.st_dev == current_dir_stat.st_dev)
 		{
 			base = basename(source_path);
-			// If it ia s file.
 			if(S_ISREG(source_file_stat.st_mode))
 			{
 				rename_call = rename(source_path, target_file);
@@ -218,47 +191,32 @@ int main(int argc, char** argv)
 
 }
 
-void copyto_target(char* curr_source_path, char* curr_target_path, struct stat fileStat)
+/* copy to temp path to recover */
+void copyto_target(char* curr_source_path, char* curr_target_path, struct stat file_stat)
 {
 
 	source = fopen(curr_source_path, "r");
-	if(source == NULL)
-	{
-		printf("Error opening file: %s\n", curr_source_path);
-		exit(-1);
-	}
+	ERROR_fopen_call(source);
+	
 	target = fopen(curr_target_path, "w");
-	if(target == NULL)
-	{
-		printf("Error opening file: %s\n", curr_target_path);
-        exit(-1);
-	}
-	//TODO: Add error checking!
-	while(bytes = fread(buf, 1, 1024, source))
-	{
-		fwrite(buf, 1, bytes, target);
-	}
-    if(ferror(source) || ferror(target))
-    {
-        printf("Error reading and writing file");
-        exit(-1);
-    }
+	ERROR_fopen_call(target);
+
+    ERROR_rw_file();
+
 	fclose(source);
 	fclose(target);
-	// printf("src mode is %d\n", fileStat.st_mode);
-	// printf("target path is %s\n", curr_target_path);
-	// printFileStat(curr_target_path);
-	chmod_call = chmod(curr_target_path, fileStat.st_mode);
+
+	chmod_call = chmod(curr_target_path, file_stat.st_mode);
 	ERROR_chmod_call();
-	const struct utimbuf srcTim = {fileStat.st_atime, fileStat.st_mtime};
-	// printf("curr_target_path is %s\n", curr_target_path);
-	utime_call = utime(curr_target_path, &srcTim);
+
+	const struct utimbuf source_time = {file_stat.st_atime, file_stat.st_mtime};
+	
+	utime_call = utime(curr_target_path, &source_time);
 	ERROR_utime_call();
-	// printFileStat(source_path);
-	// printFileStat(curr_target_path);
-	return;
 }
 
+
+/* remove directory */
 void remove_directory(char* currPath, char* file, int isSamePtn)
 {
 
@@ -319,7 +277,6 @@ void remove_directory(char* currPath, char* file, int isSamePtn)
     closedir(dir);
     chmod_call = chmod(curr_target_path, srcFolderStat.st_mode);
     ERROR_chmod_call();
-
 }
 
 /* Title of the Program */
@@ -395,7 +352,7 @@ void ERROR_rename_call()
 /* ERROR call for rmdir() */
 void ERROR_getcwd_call()
 {
-    if(getcwd_call)
+    if(!getcwd_call)
     {
         fprintf(stderr, "** ERROR: rmdir() call failed. ** \n");
         ERROR_call();
@@ -410,6 +367,16 @@ void ERROR_mkdir_call()
         fprintf(stderr, "** ERROR: mkdir() call failed. ** \n\n");
         ERROR_call();
     }
+}
+
+/* ERROR call for fopen() */
+void ERROR_fopen_call(FILE* file)
+{
+	if(file == NULL)
+	{
+		fprintf(stderr, "** ERROR: can't open file. **\n");
+		ERROR_call();
+	}
 }
 
 /* ERROR call for rmdir() */
@@ -491,6 +458,20 @@ void ERROR_fileNotFound(char* source_path)
 		printf("** ERROR: does not exist in the dumpster. **\n\n");
 		ERROR_call();
 	}
+}
+
+/* ERROR call for reading and writing files */
+void ERROR_rw_file()
+{
+	while(bytes = fread(buf, 1, 1024, source))
+	{
+		fwrite(buf, 1, bytes, target);
+	}
+    if(ferror(source) || ferror(target))
+    {
+        fprintf(stderr, "** ERROR: cannot read and write file. **");
+        exit(-1);
+    }
 }
 
 /* sets dumpster path and stat */

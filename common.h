@@ -10,7 +10,7 @@
 
 /* must match dumpster directory in current location */
 #define DUMPSTER "dumpster";
-#define EXTENSION "-ext";
+#define EXTENSION ".1";
 
 // Concatinate two strings.
 char* concat(char* c1, char* c2);
