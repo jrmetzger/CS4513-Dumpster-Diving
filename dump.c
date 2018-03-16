@@ -96,32 +96,28 @@ void remove_force(char* directory)
     d = readdir(dir);
     while(d)
     {
-        if((strcmp(d->d_name, "..") == 0) ||
-            (strcmp(d->d_name, ".") == 0))
+        if((strcmp(d->d_name, "..") == 0) || (strcmp(d->d_name, ".") == 0))
         {
             d = readdir(dir);
             continue;
         }
         char* file = concat(directory, "/");
         file = concat(file, d->d_name);
-
-
-        printf("> [ Deleting { %s } file perminently ... ]\n\n", d->d_name);
-        
-
-
         stat_call = stat(file, &file_stat);
         ERROR_stat_call();
 
         if(S_ISREG(file_stat.st_mode))
         {
             remove_call = remove(file);
+            printf("> [ Deleting { %s } file permanently ... ]\n\n", d->d_name);
             ERROR_remove_call();
         }
         else if(S_ISDIR(file_stat.st_mode))
         {
             remove_force(file);
             rmdir_call = rmdir(file);
+            char* dir_name = basename(file);
+            printf("> [ Deleting { %s } directory permanently ... ]\n\n", dir_name);
             ERROR_rmdir_call();
 
         }
@@ -143,6 +139,7 @@ void set_dumpster()
         fprintf(stderr, "** ERROR: dumpster does not exist ... **\n\n");
         ERROR_call();
     }
+    
     stat_call = stat(dumpster_path, &dumpster_stat);
     ERROR_stat_call();
 }

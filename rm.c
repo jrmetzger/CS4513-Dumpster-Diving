@@ -638,6 +638,7 @@ void ERROR_chmod_call()
     }
 }
 
+/* ERROR call for opendir() */
 void ERROR_opendir_call()
 {
     if(dir == NULL)
