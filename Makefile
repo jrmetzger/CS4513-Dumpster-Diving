@@ -1,7 +1,7 @@
 all: rm dump dv
 
-	@echo For Testing
-	@echo Creating test file and directory
+	@echo For Testing:
+	@echo > [ Creating test file and directory ]
 	@echo "test file" > test.txt
 	mkdir test
 
@@ -17,4 +17,4 @@ dv: dv.c
 
 clean:
 	-rm -f *.o
-	-rm -f rm dump dv
+	-rm -f -r rm dump dv test test.txt
