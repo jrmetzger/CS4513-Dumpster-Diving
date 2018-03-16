@@ -1,7 +1,7 @@
 all: rm dump dv
 
 	@echo For Testing:
-	@echo > [ Creating test file and directory ]
+	@echo Creating test file and directory
 	@echo "test file" > test.txt
 	mkdir test
 

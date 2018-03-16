@@ -71,7 +71,7 @@ void flag_check(int argc, char **argv);
 void set_dumpster();
 /* set file */
 void set_file(char* file);
-// Get the extension for a given path.
+/* get extension of path */
 char* get_extension(char* path);
 // Get the file path in dumpster for a given file.
 void get_dumpsterPath(char* file, char* dumpster_path, char** new_path);
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
     count_file = argc - optind;
 
     char* files[count_file];
-    
+
     /* create for multiple files */
     for(i = 0; i < count_file; i++)
     {
@@ -193,12 +193,15 @@ void remove_force(char* directory)
         if(S_ISREG(file_stat.st_mode))
         {
             remove_call = remove(file);
+            printf("> [ Deleting { %s } file permanently ... ]\n\n", d->d_name);
             ERROR_remove_call();
         }
         else if(S_ISDIR(file_stat.st_mode))
         {
             remove_force(file);
             rmdir_call = rmdir(file);
+            char* dir_name = basename(file);
+            printf("> [ Deleting { %s } directory permanently ... ]\n\n", dir_name);
             ERROR_rmdir_call();
         }
         free(file);
@@ -305,7 +308,7 @@ void copyto_dump(char* file, char* dumpster_path, struct stat file_stat)
     ERROR_chmod_call();
 
     const struct utimbuf source_time = {file_stat.st_atime, file_stat.st_mtime};
-    int utime_call = utime(new_path, &source_time);
+    utime_call = utime(new_path, &source_time);
     ERROR_utime_call();
 
     free(new_path);
@@ -362,11 +365,11 @@ void program_title()
 /* Prints help message and quit */
 void usage()
 {
-    printf("rm - Moves files to the dumpster\n\n");
-    printf("usage: ./rm -f -h -r < file(s) ... > \n");
-    printf("  -f:\tforce a complete remove\n");
-    printf("  -h:\tusage message\n");
-    printf("  -r:\tremove any subdirectories\n\n\n");
+    fprintf(stderr, "rm - Moves files to the dumpster\n\n");
+    fprintf(stderr, "usage: ./rm -f -h -r < file(s) ... > \n");
+    fprintf(stderr, "  -f:\tforce a complete remove\n");
+    fprintf(stderr, "  -h:\tusage message\n");
+    fprintf(stderr, "  -r:\tremove any subdirectories\n\n");
     end_line();
     exit(1);
 }
@@ -499,8 +502,6 @@ void check_f_flag(char* file)
 /* checks if dumpster in directory */
 void check_dumpster(char* file)
 {
-
-
     if(file_stat.st_dev == dumpster_stat.st_dev)
     {
         if(S_ISREG(file_stat.st_mode))
@@ -515,8 +516,8 @@ void check_dumpster(char* file)
             check_r_flag();
             remove_directory(file, dumpster_path, 1);
             rmdir_call = rmdir(file);
-            printf("> [ Moving { %s } directory to dumpster ... ]\n\n", file);
             ERROR_rmdir_call();
+            printf("> [ Moving { %s } directory to dumpster ... ]\n\n", file);
         }
     }
     else

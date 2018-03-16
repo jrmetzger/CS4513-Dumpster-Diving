@@ -169,9 +169,9 @@ void flag_check(int argc, char **argv)
 /* Prints help message and quit */
 void usage()
 {
-    printf("dump - clears dumpster\n\n");
-    printf("usage: ./dump -h < file(s) ... > \n");
-    printf("  -h:\tusage message\n");
+    fprintf(stderr, "dump - clears dumpster\n\n");
+    fprintf(stderr, "usage: ./dump -h < file(s) ... > \n");
+    fprintf(stderr, "  -h:\tusage message\n");
     end_line();
     exit(1);
 }
