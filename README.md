@@ -38,7 +38,7 @@ $ ./dv [ -h ] files(s)
 
 ## TOOL ACTIONS
 
-1. Make the files
+1. 	Make the files
 
 	$ make
 
@@ -50,64 +50,24 @@ $ ./dv [ -h ] files(s)
 	Creating test file and directory
 	mkdir test
 
-2. Remove files to dumpster (-r is for directories)
+2. 	Remove files to dumpster (-r is for directories)
 
 	$ ./rm -r test test.txt
 
-	###########################################
+3. 	Move files back from dumpster
 
-		Welcome to Dumpster Diving
-		Created by Jonathan Metzger
-		{ rm } tool Utility
+	$ ./dv test.txt
 
-	###########################################
+4. 	Force remove files (not to dumpster)
 
-	> [ Moving { test } directory to dumpster ... ]
+	$ ./rm -f test.txt
 
-	> [ Moving { test.txt } file to dumpster ... ]
+	Force remove directories (not to dumpster)
 
-	###########################################
+	$ ./rm -f -r test
 
-3. Move files back from dumpster
-
-	$ ./dv test test.txt
-
-	###########################################
-
-		Welcome to Dumpster Diving
-		Created by Jonathan Metzger
-		{ dv } tool Utility
-
-	###########################################
-
-	> [ Moving { test } directory back from dumpster ... ]
-
-	> [ Moving { test.txt } file back from dumpster ... ]
-
-	###########################################
-
-
-4. Force remove files (not to dumpster)
-	$ make
-	$ ./rm -r -f test test.txt
-
-	###########################################
-
-		Welcome to Dumpster Diving
-		Created by Jonathan Metzger
-		{ rm } tool Utility
-
-	###########################################
-
-	> [ Deleting { test } directory perminently ... ]
-
-	> [ Deleting { test.txt } file perminently ... ]
-
-	###########################################
-
-5. Empty dumpster :)
-	$ make
-	$ ./rm -r test test.txt
+5. 	Empty dumpster :)
+	
 	$ ./dump
 
 

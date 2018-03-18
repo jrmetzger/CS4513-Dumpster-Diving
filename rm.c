@@ -127,9 +127,9 @@ int main(int argc, char** argv)
 
     printf("\n");
 
-    end_line();
+    // end_line();
 
-    program_title();
+    // program_title();
 
     flag_check(argc, argv);
 
@@ -164,7 +164,7 @@ int main(int argc, char** argv)
         }
     }
 
-    end_line();
+    // end_line();
     return 0;
 }
 
@@ -193,7 +193,7 @@ void remove_force(char* directory)
         if(S_ISREG(file_stat.st_mode))
         {
             remove_call = remove(file);
-            printf("> [ Deleting { %s } file permanently ... ]\n\n", d->d_name);
+            //printf("> [ Deleting { %s } file permanently ... ]\n\n", d->d_name);
             ERROR_remove_call();
         }
         else if(S_ISDIR(file_stat.st_mode))
@@ -201,7 +201,7 @@ void remove_force(char* directory)
             remove_force(file);
             rmdir_call = rmdir(file);
             char* dir_name = basename(file);
-            printf("> [ Deleting { %s } directory permanently ... ]\n\n", dir_name);
+            //printf("> [ Deleting { %s } directory permanently ... ]\n\n", dir_name);
             ERROR_rmdir_call();
         }
         free(file);
@@ -318,12 +318,17 @@ void copyto_dump(char* file, char* dumpster_path, struct stat file_stat)
 /* get dumpster path */
 void get_dumpsterPath(char* file, char* dumpster_path, char** new_path)
 {
+    int i;
+    char* temp;
     char* basec = strdup(file);
     char* bname = basename(basec);
     *new_path = concat(dumpster_path, "/");
     *new_path = concat(*new_path, bname);
     ext = get_extension(*new_path);
-    if(strcmp(ext, ".0")) { *new_path = concat(*new_path, ext); }
+    if(strcmp(ext, ".0")) 
+    { 
+        *new_path = concat(*new_path, ext); 
+    }
 }
 
 /* get extension */
@@ -353,7 +358,7 @@ char* get_extension(char* path)
     return concat(".", array);
 }
 
-/* Title of the Program */
+/* (OPTIONAL) Title of the Program */
 void program_title()
 {
     printf("\tWelcome to Dumpster Diving\n");
@@ -365,6 +370,7 @@ void program_title()
 /* Prints help message and quit */
 void usage()
 {
+    end_line();
     fprintf(stderr, "rm - Moves files to the dumpster\n\n");
     fprintf(stderr, "usage: ./rm -f -h -r < file(s) ... > \n");
     fprintf(stderr, "  -f:\tforce a complete remove\n");
@@ -482,7 +488,7 @@ void check_f_flag(char* file)
         {
             /* remove file */
             rmdir_call = remove(file);
-            printf("> [ Deleting { %s } file perminently ... ]\n\n", file);
+            //printf("> [ Deleting { %s } file perminently ... ]\n\n", file);
             ERROR_remove_call();
         }
 
@@ -493,7 +499,7 @@ void check_f_flag(char* file)
             /* remove directory */
             remove_force(file);
             rmdir_call = remove(file);
-            printf("> [ Deleting { %s } directory perminently ... ]\n\n", file);
+            //printf("> [ Deleting { %s } directory perminently ... ]\n\n", file);
             ERROR_rmdir_call();
         }
     }
@@ -509,7 +515,7 @@ void check_dumpster(char* file)
             char* new_path;
             get_dumpsterPath(file, dumpster_path, &new_path);
             rename(file, new_path);
-            printf("> [ Moving { %s } file to dumpster ... ]\n\n", file);
+            //printf("> [ Moving { %s } file to dumpster ... ]\n\n", file);
         }
         else if(S_ISDIR(file_stat.st_mode))
         {
@@ -517,7 +523,7 @@ void check_dumpster(char* file)
             remove_directory(file, dumpster_path, 1);
             rmdir_call = rmdir(file);
             ERROR_rmdir_call();
-            printf("> [ Moving { %s } directory to dumpster ... ]\n\n", file);
+            //printf("> [ Moving { %s } directory to dumpster ... ]\n\n", file);
         }
     }
     else
@@ -544,7 +550,6 @@ void check_dumpster(char* file)
 /* ERROR call */
 void ERROR_call()
 {    
-    end_line();
     usage();
     exit(-1);
 }

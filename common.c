@@ -6,6 +6,7 @@
  * Spring 2018
  *
  * Project for CS4513 Distributed Computing Systems
+ * Source: https://stackoverflow.com/questions/8465006/how-do-i-concatenate-two-strings-in-c
  *
  */
 

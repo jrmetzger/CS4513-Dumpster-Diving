@@ -1,10 +1,5 @@
 all: rm dump dv
 
-	@echo For Testing:
-	@echo Creating test file and directory
-	@echo "test file" > test.txt
-	mkdir test
-
 dump: dump.c
 	gcc -g3 -o dump dump.c common.c
 

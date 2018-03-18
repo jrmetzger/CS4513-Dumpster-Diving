@@ -68,9 +68,9 @@ int main(int argc, char** argv)
 {
     printf("\n");
 
-    end_line();
+//     end_line();
 
-    program_title();
+//     program_title();
 
     flag_check(argc, argv);
     
@@ -78,9 +78,9 @@ int main(int argc, char** argv)
 
     remove_force(dumpster_path);
 
-    puts("** Dumpster is Empty :)  **\n");
+    //puts("** Dumpster is Empty :)  **\n");
 
-    end_line();
+    //end_line();
 }
 
 /* force remove file */
@@ -109,7 +109,7 @@ void remove_force(char* directory)
         if(S_ISREG(file_stat.st_mode))
         {
             remove_call = remove(file);
-            printf("> [ Deleting { %s } file permanently ... ]\n\n", d->d_name);
+            //printf("> [ Deleting { %s } file permanently ... ]\n\n", d->d_name);
             ERROR_remove_call();
         }
         else if(S_ISDIR(file_stat.st_mode))
@@ -117,7 +117,7 @@ void remove_force(char* directory)
             remove_force(file);
             rmdir_call = rmdir(file);
             char* dir_name = basename(file);
-            printf("> [ Deleting { %s } directory permanently ... ]\n\n", dir_name);
+            //printf("> [ Deleting { %s } directory permanently ... ]\n\n", dir_name);
             ERROR_rmdir_call();
 
         }

@@ -106,9 +106,9 @@ int main(int argc, char** argv)
 {
 	printf("\n");
 
-    end_line();
+    // end_line();
 
-    program_title();
+    // program_title();
 
     flag_check(argc, argv);
 
@@ -130,21 +130,24 @@ int main(int argc, char** argv)
 	struct stat dumpster_stat;
 	stat_call = stat(dumpster_path, &dumpster_stat);
 	ERROR_stat_call();
-	char current_dir[1024];
+	
+    char current_dir[1024];
 	getcwd_call = getcwd(current_dir, 1024);
 	ERROR_getcwd_call();
-	stat_call = stat(current_dir, &current_dir_stat);
+	
+    stat_call = stat(current_dir, &current_dir_stat);
 	ERROR_stat_call();
-	for(i = 0; i < count_file; i++)
+	
+    for(i = 0; i < count_file; i++)
 	{
 		char* file = files[i];
 		int access_call = access(file, F_OK);
 		source_path = concat(dumpster_path, "/");
 		source_path = concat(source_path, file);
-		char* dupFile = strdup(file);
+		char* dumpster_path = strdup(file);
 		char* target_file;
 		char* token;
-		while((token = strsep(&dupFile, "/"))){
+		while((token = strsep(&dumpster_path, "/"))){
 			target_file = strdup(token);
 		}
 		ERROR_fileNotFound(source_path);
@@ -159,7 +162,7 @@ int main(int argc, char** argv)
                 ERROR_rename_call();
                 chmod_call = chmod(target_file, source_file_stat.st_mode);
                 ERROR_chmod_call();
-               	printf("> [ Moving { %s } file back from dumpster ... ]\n\n", base);
+               	//printf("> [ Moving { %s } file back from dumpster ... ]\n\n", base);
 			}
 			else if(S_ISDIR(source_file_stat.st_mode))
 			{
@@ -167,7 +170,7 @@ int main(int argc, char** argv)
 				remove_directory(source_path, target_file, 1);
 				rmdir_call = rmdir(source_path);
                 ERROR_rmdir_call();
-                printf("> [ Moving { %s } directory back from dumpster ... ]\n\n", base);
+                //printf("> [ Moving { %s } directory back from dumpster ... ]\n\n", base);
 			}
 		}
 		else
@@ -187,7 +190,7 @@ int main(int argc, char** argv)
 		}
 		
 	}
-	end_line();
+	// end_line();
 
 }
 
@@ -292,6 +295,7 @@ void program_title()
 /*Print the usage of the command*/
 void usage(void)
 {
+    end_line();
     fprintf(stderr, "dv - retrive file or directory from dumpster\n\n");
     fprintf(stderr, "usage: ./dv [-h] < file(s) ... >\n");
     fprintf(stderr, "  -h:\tusage message\n\n");
@@ -324,7 +328,7 @@ void flag_check(int argc, char **argv)
 /* ERROR call */
 void ERROR_call()
 {
-	end_line();
+	// end_line();
     usage();
     exit(-1);
 }
