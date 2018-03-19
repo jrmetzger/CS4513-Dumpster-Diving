@@ -26,7 +26,7 @@
 // Print the usage of this function.
 void usage(void);
 // Remove a folder.
-void remove_directory(char* currPath, char* file, int isSamePtn);
+void remove_directory(char* current_path, char* file, int same);
 /* copy to targetget */
 void copyto_target(char* source_path, char* curr_target_path, struct stat file_stat);
 
@@ -220,18 +220,16 @@ void copyto_target(char* curr_source_path, char* curr_target_path, struct stat f
 
 
 /* remove directory */
-void remove_directory(char* currPath, char* file, int isSamePtn)
+void remove_directory(char* current_path, char* file, int same)
 {
 
 	curr_target_path = file;
-    stat_call = stat(currPath, &srcFolderStat);
-    // If dRtn is not 0, stat() failed
+    stat_call = stat(current_path, &srcFolderStat);
     ERROR_stat_call();
-    // Create a new folder in curretn working directory.
+
     mkdir_call = mkdir(curr_target_path, srcFolderStat.st_mode);
     ERROR_mkdir_call();
-    // Open the directory in dumpster.
-    dir = opendir(currPath);
+    dir = opendir(current_path);
    	ERROR_opendir_call();
     d = readdir(dir);
     while(d)
@@ -243,7 +241,7 @@ void remove_directory(char* currPath, char* file, int isSamePtn)
     		continue;
     	}
     	struct stat current_stat;
-    	char* current_file = concat(currPath, "/");
+    	char* current_file = concat(current_path, "/");
     	current_file = concat(current_file, d->d_name);
     	stat_call = stat(current_file, &current_stat);
     	ERROR_stat_call();
@@ -251,7 +249,7 @@ void remove_directory(char* currPath, char* file, int isSamePtn)
     	new_target_path = concat(new_target_path, d->d_name);
     	if(S_ISREG(current_stat.st_mode))
     	{
-    		if(isSamePtn)
+    		if(same)
     		{
     			rename_call = rename(current_file, new_target_path);
     			ERROR_rename_call();
@@ -269,7 +267,7 @@ void remove_directory(char* currPath, char* file, int isSamePtn)
     	}
     	else if(S_ISDIR(current_stat.st_mode))
     	{
-    		remove_directory(current_file, new_target_path, isSamePtn);
+    		remove_directory(current_file, new_target_path, same);
     		rmdir_call = rmdir(current_file);
             ERROR_rmdir_call();
     	}

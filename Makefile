@@ -1,5 +1,9 @@
 all: rm dump dv
 
+
+	echo "hello "> "test$i.txt"
+	mkdir test
+
 dump: dump.c
 	gcc -g3 -o dump dump.c common.c
 

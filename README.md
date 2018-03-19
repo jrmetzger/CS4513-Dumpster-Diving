@@ -11,7 +11,7 @@
 
 - [x] dump : removes all files in "dumpster"
 
-- [ ] log all information into log.txt (Errors, messages, etc.)
+- [x] log all information into log.txt (Errors, messages, etc.)
 
 - [x] if "dumpster" directory has not been created, error and exit.
 
@@ -69,22 +69,3 @@ $ ./dv [ -h ] files(s)
 5. 	Empty dumpster :)
 	
 	$ ./dump
-
-
-	###########################################
-
-		Welcome to Dumpster Diving
-		Created by Jonathan Metzger
-		{ dump } tool Utility
-
-	###########################################
-
-	> [ Deleting { test } directory permanently ... ]
-
-	> [ Deleting { test.txt } file permanently ... ]
-
-	** Dumpster is Empty :)  **
-
-	###########################################
-
-

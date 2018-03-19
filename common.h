@@ -41,7 +41,7 @@ void ERROR_duplicate_dir();
 /* ERROR call for rmdir() */
 void ERROR_rmdir_call();
 /* ERROR when dumpster limit reached */
-void ERROR_limit_dumpster(int number);
+void ERROR_limit_dumpster();
 /* ERROR call for stat() */
 void ERROR_stat_call();
 /* ERROR call for open() */
