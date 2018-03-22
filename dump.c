@@ -90,8 +90,8 @@ void remove_force(char* directory)
     dir = opendir(directory);
     if(dir == NULL)
     {
-        perror("open() call failed");
-        exit(-1);
+        fprintf(stderr, "** ERROR: opendir() call failed. ** \n");
+        ERROR_call();
     }
     d = readdir(dir);
     while(d)
@@ -170,7 +170,7 @@ void flag_check(int argc, char **argv)
 void usage()
 {
     fprintf(stderr, "dump - clears dumpster\n\n");
-    fprintf(stderr, "usage: ./dump -h < file(s) ... > \n");
+    fprintf(stderr, "usage: ./dump -h\n");
     fprintf(stderr, "  -h:\tusage message\n");
     end_line();
     exit(1);

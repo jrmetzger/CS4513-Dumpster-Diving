@@ -1,0 +1,130 @@
+
+----------------------------------
+
+Welcome to Dumpster Diving TESTING
+Created by Jonathan Metzger
+{ rm, dv and dump } tool Utility
+
+----------------------------------
+
+> [ make clean ]
+
+rm -f *.o
+rm -f -r rm dump dv test test.txt
+
+> [ make ]
+
+gcc -g3 -o rm rm.c common.c
+gcc -g3 -o dump dump.c common.c
+gcc -g3 -o dv dv.c common.c
+echo "hello "> "test.txt"
+mkdir test
+
+----------------------------------
+
+[ Partition:	/media/sf_projects/Dumpster-Diving/dumpster ]
+[ Size: 	64 bytes ]
+
+----------------------------------
+
+> [ Making 20 test files ]
+20 files added in 55 milliseconds
+Average time per file in 2 milliseconds
+
+----------------------------------
+
+> [ Removing 20 test files to dumpster ]
+20 files removed in 181 milliseconds
+Average time per files in 9 milliseconds
+
+----------------------------------
+
+> [ Recovering 20 test files from dumpster ]
+20 files removed in 333 milliseconds
+Average time per files in 16 milliseconds
+
+----------------------------------
+
+> [ Making 20 test directories ]
+20 directories added in 396 milliseconds
+Average time per directory in 19 milliseconds
+
+----------------------------------
+
+> [ Removing 20 test directories to dumpster ]
+20 directories removed in 580 milliseconds
+Average time per directory in 29 milliseconds
+
+----------------------------------
+
+> [ Recovering 20 test directories from dumpster ]
+20 files removed in 757 milliseconds
+Average time per files in 37 milliseconds
+
+----------------------------------
+
+> [ Removing 20 test files and directories to dumpster ]
+20 files and directories removed in 953 milliseconds
+Average time per files in 47 milliseconds
+
+----------------------------------
+
+> [ Emptying the Dumpster :) ]
+Dumping takes 67 milliseconds
+
+----------------------------------
+
+[ Partition:	/media/sf_projects/dumpster_copy ]
+[ Size: 	96 bytes ]
+
+----------------------------------
+
+> [ Making 20 test files ]
+20 files added in 1073 milliseconds
+Average time per file in 53 milliseconds
+
+----------------------------------
+
+> [ Removing 20 test files to dumpster ]
+20 files removed in 1253 milliseconds
+Average time per files in 62 milliseconds
+
+----------------------------------
+
+> [ Recovering 20 test files from dumpster ]
+20 files removed in 1434 milliseconds
+Average time per files in 71 milliseconds
+
+----------------------------------
+
+> [ Making 20 test directories ]
+20 directories added in 1543 milliseconds
+Average time per directory in 77 milliseconds
+
+----------------------------------
+
+> [ Removing 20 test directories to dumpster ]
+20 directories removed in 1805 milliseconds
+Average time per directory in 90 milliseconds
+
+----------------------------------
+
+> [ Recovering 20 test directories from dumpster ]
+20 files removed in 2076 milliseconds
+Average time per files in 103 milliseconds
+
+----------------------------------
+
+> [ Removing 20 test files and directories to dumpster ]
+20 files and directories removed in 2280 milliseconds
+Average time per files in 114 milliseconds
+
+----------------------------------
+
+> [ Emptying the Dumpster :) ]
+Dumping takes 74 milliseconds
+
+----------------------------------
+
+##################################
+

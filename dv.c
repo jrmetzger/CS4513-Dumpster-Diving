@@ -26,8 +26,8 @@
 // Print the usage of this function.
 void usage(void);
 // Remove a folder.
-void remove_directory(char* current_path, char* file, int same);
-/* copy to targetget */
+void remove_directory(char* current_path, char* current_dumpster_path, int same);
+/* copy to target */
 void copyto_target(char* source_path, char* curr_target_path, struct stat file_stat);
 
 /* ERROR call */
@@ -220,10 +220,10 @@ void copyto_target(char* curr_source_path, char* curr_target_path, struct stat f
 
 
 /* remove directory */
-void remove_directory(char* current_path, char* file, int same)
+void remove_directory(char* current_path, char* current_dumpster_path, int same)
 {
 
-	curr_target_path = file;
+	curr_target_path = current_dumpster_path;
     stat_call = stat(current_path, &srcFolderStat);
     ERROR_stat_call();
 

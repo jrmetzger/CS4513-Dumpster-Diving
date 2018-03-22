@@ -34,7 +34,7 @@ char* concat(char* s1, char* s2)
     return result;
 }
 
-/* end line */
+/* (optional) end line */
 void end_line()
 { printf("###########################################\n\n"); 
 }

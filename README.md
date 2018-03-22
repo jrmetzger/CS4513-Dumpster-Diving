@@ -11,7 +11,7 @@
 
 - [x] dump : removes all files in "dumpster"
 
-- [x] log all information into log.txt (Errors, messages, etc.)
+- [x] log all information into output.txt (Errors, messages, etc.)
 
 - [x] if "dumpster" directory has not been created, error and exit.
 
@@ -34,6 +34,10 @@ $ ./dump [ -h ]
 
 ```
 $ ./dv [ -h ] files(s)
+```
+
+```
+$ bash ./testing.sh
 ```
 
 ## TOOL ACTIONS

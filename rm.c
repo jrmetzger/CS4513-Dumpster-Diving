@@ -318,12 +318,8 @@ void copyto_dump(char* file, char* dumpster_path, struct stat file_stat)
 /* get dumpster path */
 void get_dumpsterPath(char* file, char* dumpster_path, char** new_path)
 {
-    int i;
-    char* temp;
-    char* basec = strdup(file);
-    char* bname = basename(basec);
     *new_path = concat(dumpster_path, "/");
-    *new_path = concat(*new_path, bname);
+    *new_path = concat(*new_path, basename(strdup(file)));
     ext = get_extension(*new_path);
     if(strcmp(ext, ".0")) 
     { 
