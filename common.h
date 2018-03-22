@@ -16,11 +16,31 @@
 char* concat(char* c1, char* c2);
 /* seperator line */
 void end_line();
-/* remove directory */
-void remove_directory(char* current_path, char* currdumpster_path, int isSamePtn);
+/* title of the program */
+void program_title();
+/* prints help message and quit */
+void usage();
+/* takes flags from input */
+void flag_check(int argc, char **argv);
+/* checks if -f flag is present */
+void check_f_flag(char* file);
+/* checks if -r flag is present */
+void check_r_flag();
+/* set dumpster */
+void set_dumpster();
+/* check to see if dumpster same directory */
+void check_dumpster();
+/* set file */
+void set_file(char* file);
+/* get extension of path */
+char* get_extension(char* path);
+/* dumpster path for file */
+void get_dumpsterPath(char* file, char* dumpster_path, char** new_path);
 
-
-
+/* remove directory with -r */
+void move_directory(char* current_path, char* current_dumpster_path, int same);
+/* remove permanently with -f */
+void remove_force(char* directory);
 
 /* ERROR call */
 void ERROR_call();
@@ -30,6 +50,8 @@ void ERROR_no_file(int argc);
 void ERROR_rename_call();
 /* ERROR call for remove() */
 void ERROR_remove_call();
+/* ERROR call for fopen() */
+void ERROR_fopen_call();
 /* ERROR call for open() */
 void ERROR_open_call();
 /* ERROR call for opendir() */
@@ -50,3 +72,9 @@ void ERROR_chmod_call();
 void ERROR_utime_call();
 /* ERROR call for unlink() */
 void ERROR_unlink_call();
+/* ERROR call for reading and writing files */
+void ERROR_rw_file();
+/* ERROR call for getcwd() */
+void ERROR_getcwd_call();
+/* ERROR call for fileNotFound() */
+void ERROR_fileNotFound(char* source_path);

@@ -23,45 +23,8 @@
 
 #include "common.h"
 
-// Print the usage of this function.
-void usage(void);
-// Remove a folder.
-void remove_directory(char* current_path, char* current_dumpster_path, int same);
 /* copy to target */
-void copyto_target(char* source_path, char* curr_target_path, struct stat file_stat);
-
-/* ERROR call */
-void ERROR_call();
-/* no file present */
-void ERROR_no_file(int argc);
-/* ERROR call for mkdir() */
-void ERROR_mkdir_call();
-/* ERROR call for rmdir() */
-void ERROR_rmdir_call();
-/* ERROR call for open() */
-void ERROR_chmod_call();
-/* ERROR call for stat() */
-void ERROR_stat_call();
-/* ERROR call for getcwd() */
-void ERROR_getcwd_call();
-/* ERROR call for rename() */
-void ERROR_rename_call();
-/* ERROR call for unlink() */
-void ERROR_unlink_call();
-/* ERROR call for utime() */
-void ERROR_utime_call();
-/* ERROR call for fopen() */
-void ERROR_fopen_call();
-/* ERROR call for reading and writing files */
-void ERROR_rw_file();
-/* ERROR call for fileNotFound() */
-void ERROR_fileNotFound(char* source_path);
-/* Title of the Program */
-void program_title();
-/* sets dumpster path and stat */
-void set_dumpster();
-/* checks flag of input */
-void flag_check(int argc, char **argv);
+void fromdifferent_partition(char* source_path, char* curr_target_path, struct stat file_stat);
 
 /* initialize DIR and FILE */
 DIR* dir;
@@ -90,6 +53,7 @@ struct stat current_dir_stat;
 struct stat source_file_stat;
 struct dirent* d;
 struct stat srcFolderStat;
+struct stat current_stat;
 
 /* initialize characters */
 char* dumpster_name = DUMPSTER;
@@ -100,6 +64,10 @@ char* file = NULL;
 char* source_path = NULL;
 char* buf[1024];
 char* base = NULL;
+char* target_file = NULL;
+char* token = NULL;
+char* current_file = NULL;
+char* new_target_path = NULL;
 
 /* main */
 int main(int argc, char** argv)
@@ -140,18 +108,17 @@ int main(int argc, char** argv)
 	
     for(i = 0; i < count_file; i++)
 	{
-		char* file = files[i];
-		int access_call = access(file, F_OK);
+		file = files[i];
+		access_call = access(file, F_OK);
 		source_path = concat(dumpster_path, "/");
 		source_path = concat(source_path, file);
-		char* dumpster_path = strdup(file);
-		char* target_file;
-		char* token;
+		dumpster_path = strdup(file);
+
 		while((token = strsep(&dumpster_path, "/"))){
 			target_file = strdup(token);
 		}
 		ERROR_fileNotFound(source_path);
-		int stat_call = stat(source_path, &source_file_stat);
+		stat_call = stat(source_path, &source_file_stat);
 		ERROR_stat_call();
 		if(dumpster_stat.st_dev == current_dir_stat.st_dev)
 		{
@@ -167,7 +134,7 @@ int main(int argc, char** argv)
 			else if(S_ISDIR(source_file_stat.st_mode))
 			{
 				// Recursively add new folder back to current directory.
-				remove_directory(source_path, target_file, 1);
+				move_directory(source_path, target_file, 1);
 				rmdir_call = rmdir(source_path);
                 ERROR_rmdir_call();
                 //printf("> [ Moving { %s } directory back from dumpster ... ]\n\n", base);
@@ -177,13 +144,13 @@ int main(int argc, char** argv)
 		{
 			if(S_ISREG(source_file_stat.st_mode))
 			{
-				copyto_target(source_path, target_file, source_file_stat);
+				fromdifferent_partition(source_path, target_file, source_file_stat);
 				unlink_call = unlink(source_path);
 				ERROR_unlink_call();
 			}
 			else if(S_ISDIR(source_file_stat.st_mode))
 			{
-				remove_directory(source_path, target_file, 0);
+				move_directory(source_path, target_file, 0);
 				rmdir_call = rmdir(source_path);
 				ERROR_rmdir_call();
 			}
@@ -195,7 +162,7 @@ int main(int argc, char** argv)
 }
 
 /* copy to temp path to recover */
-void copyto_target(char* curr_source_path, char* curr_target_path, struct stat file_stat)
+void fromdifferent_partition(char* curr_source_path, char* curr_target_path, struct stat file_stat)
 {
 
 	source = fopen(curr_source_path, "r");
@@ -220,7 +187,7 @@ void copyto_target(char* curr_source_path, char* curr_target_path, struct stat f
 
 
 /* remove directory */
-void remove_directory(char* current_path, char* current_dumpster_path, int same)
+void move_directory(char* current_path, char* current_dumpster_path, int same)
 {
 
 	curr_target_path = current_dumpster_path;
@@ -232,6 +199,7 @@ void remove_directory(char* current_path, char* current_dumpster_path, int same)
     dir = opendir(current_path);
    	ERROR_opendir_call();
     d = readdir(dir);
+    /* recursively check files or directories */
     while(d)
     {
     	if((strcmp(d->d_name, "..") == 0) ||
@@ -240,15 +208,18 @@ void remove_directory(char* current_path, char* current_dumpster_path, int same)
     		d = readdir(dir);
     		continue;
     	}
-    	struct stat current_stat;
-    	char* current_file = concat(current_path, "/");
+    	current_file = concat(current_path, "/");
     	current_file = concat(current_file, d->d_name);
-    	stat_call = stat(current_file, &current_stat);
+    	
+        stat_call = stat(current_file, &current_stat);
     	ERROR_stat_call();
-    	char* new_target_path = concat(curr_target_path, "/");
+    	
+        new_target_path = concat(curr_target_path, "/");
     	new_target_path = concat(new_target_path, d->d_name);
-    	if(S_ISREG(current_stat.st_mode))
+    	
+        if(S_ISREG(current_stat.st_mode))
     	{
+            /* same partition */
     		if(same)
     		{
     			rename_call = rename(current_file, new_target_path);
@@ -257,17 +228,19 @@ void remove_directory(char* current_path, char* current_dumpster_path, int same)
                 chmod_call = chmod(new_target_path, current_stat.st_mode);
                	ERROR_chmod_call();
     		}
+            /* different partition */
     		else
     		{
-    			// Copy file to new_target_path.
-    			copyto_target(current_file, new_target_path, current_stat);
+    			/* Copy file to new_target_path. */
+    			fromdifferent_partition(current_file, new_target_path, current_stat);
     			unlink_call = unlink(current_file);
 				ERROR_unlink_call();
     		}
     	}
+        /* recursively go into children to move from dumspter */
     	else if(S_ISDIR(current_stat.st_mode))
     	{
-    		remove_directory(current_file, new_target_path, same);
+    		move_directory(current_file, new_target_path, same);
     		rmdir_call = rmdir(current_file);
             ERROR_rmdir_call();
     	}

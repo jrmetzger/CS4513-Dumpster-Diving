@@ -84,7 +84,8 @@ for i in {1..20}
 	do
 		sync
 		init=$(date +%s%3N)
-		mkdir "test$i"
+		#mkdir "test$i"
+		cp -r test "test$i"
 		sync
 		final=$(date +%s%3N)
 		delta=$((final-init))

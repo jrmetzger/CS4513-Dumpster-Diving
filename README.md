@@ -1,6 +1,6 @@
 # Dumpster Diving
 - author: Jonathan Metzger
-- date: 3/15/18
+- date: 3/22/18
 
 
 ## TASKS
@@ -23,6 +23,14 @@ This application will move files into the dumpster
  -h 	help message.
  -r 	include directories and anything inside (recursive).
 file(s) include files or directories for rm and dv.
+
+```
+$ make
+```
+
+```
+$ bash ./testing.sh
+```
 
 ```
 $ ./rm [ -f -h -r -d] file(s)
@@ -50,8 +58,7 @@ $ bash ./testing.sh
 	gcc -g3 -o dump dump.c common.c
 	gcc -g3 -o dv dv.c common.c
 	
-	For Testing:
-	Creating test file and directory
+	echo "hello" > "test.txt"
 	mkdir test
 
 2. 	Remove files to dumpster (-r is for directories)

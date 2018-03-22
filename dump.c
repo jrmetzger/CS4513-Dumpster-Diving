@@ -25,15 +25,6 @@
 #include "common.h"
 
 
-/* ERROR call */
-void ERROR_call();
-/* ERROR call for remove() */
-void ERROR_remove_call();
-/* ERROR call for rmdir() */
-void ERROR_rmdir_call();
-/* ERROR call for stat() */
-void ERROR_stat_call();
-
 /* remove perminently. used with -f flag */
 void remove_force(char* directory);
 /* sets dumpster path and stat */
